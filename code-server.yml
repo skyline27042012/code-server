@@ -1,0 +1,48 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: master-chatbot-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: master-chatbot
+  ports:
+  - protocol: TCP
+    port: 8080
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: master-chatbot-deployment
+  labels:
+    app: master-chatbot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: master-chatbot
+      track: stable
+  template:
+    metadata:
+      labels:
+        app: master-chatbot
+        track: stable
+    spec:
+      containers:
+      - name: master-chatbot
+        image: $DOCKER_IMAGE_NAME
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 150
+          timeoutSeconds: 100
+          periodSeconds: 100
+        resources:
+          requests:
+            cpu: 2
+            memory: "4Gi"
