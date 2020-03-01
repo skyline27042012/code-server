@@ -1,7 +1,7 @@
 FROM node:12.14.0
 ARG tag
 ARG githubToken
-
+ARG PW=docker
 # Install VS Code's deps. These are the only two it seems we need.
 RUN apt-get update && apt-get install -y \
 	libxkbfile-dev \

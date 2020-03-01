@@ -44,6 +44,7 @@ spec:
       containers:
       - name: code-server
         image: $DOCKER_IMAGE_NAME
+        
         ports:
         - containerPort: 8080
         livenessProbe:
