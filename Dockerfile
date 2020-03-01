@@ -40,6 +40,7 @@ RUN adduser --gecos '' --disabled-password coder && \
 	echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
 
 USER coder
+ENV PASSWORD='ubuntu'
 # Create first so these directories will be owned by coder instead of root
 # (workdir and mounting appear to both default to root).
 RUN mkdir -p /home/coder/project \
@@ -54,4 +55,5 @@ VOLUME [ "/home/coder/project" ]
 COPY --from=0 /src/binaries/code-server /usr/local/bin/code-server
 EXPOSE 8080
 
-ENTRYPOINT ["dumb-init", "code-server", "--host", "0.0.0.0 ",  "PASSWORD","123456"]
+ENTRYPOINT ["dumb-init", "code-server", "--host", "0.0.0.0 "]
+
