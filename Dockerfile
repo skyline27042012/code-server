@@ -54,5 +54,5 @@ VOLUME [ "/home/coder/project" ]
 COPY --from=0 /src/binaries/code-server /usr/local/bin/code-server
 EXPOSE 8080
 
-ENTRYPOINT ["dumb-init", "code-server", "--host", "0.0.0.0 "]
+ENTRYPOINT ["dumb-init", "code-server", "--host", "0.0.0.0 ", "--allow-http", "--no-auth"]
 
