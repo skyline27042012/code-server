@@ -53,6 +53,9 @@ spec:
           initialDelaySeconds: 150
           timeoutSeconds: 100
           periodSeconds: 100
+        env:
+        - name: PASSWORD
+          value: "ubuntu"
         resources:
           requests:
             cpu: 2
