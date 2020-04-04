@@ -32,6 +32,15 @@ RUN apt-get update && apt-get install -y \
 	python3-pip \
 	&& rm -rf /var/lib/apt/lists/*
 
+
+RUN pip3 install pandas \
+    seaborn \
+	matplotlib \
+	findspark \
+	pyspark \
+	scikit-learn  
+
+
 RUN locale-gen en_US.UTF-8
 # We cannot use update-locale because docker will not use the env variables
 # configured in /etc/default/locale so we need to set it manually.
@@ -40,6 +49,45 @@ ENV LC_ALL=en_US.UTF-8 \
 
 RUN adduser --gecos '' --disabled-password coder && \
 	echo "coder ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/nopasswd
+
+
+# install java
+# Install OpenJDK-8
+RUN apt-get update && \
+    apt-get install -y openjdk-8-jdk && \
+    apt-get install -y ant && \
+    apt-get clean;
+
+# Fix certificate issues
+# Setup JAVA_HOME -- useful for docker commandline
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+RUN export JAVA_HOME
+
+
+
+ENV hadoop_ver 3.2.1
+ENV spark_ver 2.4.5
+
+
+# Get Hadoop from US Apache mirror and extract just the native
+# libs. (Until we care about running HDFS with these containers, this
+# is all we need.)
+RUN mkdir -p /opt && \
+    cd /opt && \
+    wget http://www.us.apache.org/dist/hadoop/common/hadoop-${hadoop_ver}/hadoop-${hadoop_ver}.tar.gz && \
+    tar -xvf hadoop-${hadoop_ver}.tar.gz && \
+    ln -s hadoop-${hadoop_ver} hadoop && \
+    echo Hadoop ${hadoop_ver} native libraries installed in /opt/hadoop/lib/native
+
+# Get Spark from US Apache mirror.
+RUN mkdir -p /opt && \
+    cd /opt && \
+    wget http://www.us.apache.org/dist/spark/spark-${spark_ver}/spark-${spark_ver}-bin-hadoop2.7.tgz && \
+        tar -xvf spark-${spark_ver}-bin-hadoop2.7.tgz && \
+    ln -s spark-${spark_ver}-bin-hadoop2.7 spark && \
+    echo Spark ${spark_ver} installed in /opt
+
+
 
 USER coder
 # Create first so these directories will be owned by coder instead of root
@@ -51,23 +99,7 @@ WORKDIR /home/coder/project
 
 # install python  and Pyspark
 
-RUN pip3 install pandas \
-    seaborn \
-	matplotlib \
-	findspark \
-	pyspark \
-	scikit-learn  
 
-
-ENV hadoop_ver 3.2.1
-ENV spark_ver 2.4.5
-# Get Spark from US Apache mirror.
-RUN mkdir -p /opt && \
-    cd /opt && \
-    wget http://www.us.apache.org/dist/spark/spark-${spark_ver}/spark-${spark_ver}-bin-hadoop2.7.tgz && \
-        tar -xvf spark-${spark_ver}-bin-hadoop2.7.tgz && \
-    ln -s spark-${spark_ver}-bin-hadoop2.7 spark && \
-    echo Spark ${spark_ver} installed in /opt
 COPY elasticsearch-spark-hadoop-master  ./
 # This ensures we have a volume mounted even if the user forgot to do bind
 # mount. So that they do not lose their data if they delete the container.
