@@ -28,6 +28,8 @@ RUN apt-get update && apt-get install -y \
 	vim \
 	curl \
 	wget \
+	python3-dev \
+	python3-pip \
 	&& rm -rf /var/lib/apt/lists/*
 
 RUN locale-gen en_US.UTF-8
@@ -46,6 +48,26 @@ RUN mkdir -p /home/coder/project \
   && mkdir -p /home/coder/.local/share/code-server
 
 WORKDIR /home/coder/project
+
+# install python  and Pyspark
+
+RUN pip3 install -y pandas \
+    seaborn \
+	matplotlib \
+	findspark \
+	pyspark \
+	scikit-learn  
+
+
+ENV hadoop_ver 3.2.1
+ENV spark_ver 2.4.5
+# Get Spark from US Apache mirror.
+RUN mkdir -p /opt && \
+    cd /opt && \
+    wget http://www.us.apache.org/dist/spark/spark-${spark_ver}/spark-${spark_ver}-bin-hadoop2.7.tgz && \
+        tar -xvf spark-${spark_ver}-bin-hadoop2.7.tgz && \
+    ln -s spark-${spark_ver}-bin-hadoop2.7 spark && \
+    echo Spark ${spark_ver} installed in /opt
 
 # This ensures we have a volume mounted even if the user forgot to do bind
 # mount. So that they do not lose their data if they delete the container.
