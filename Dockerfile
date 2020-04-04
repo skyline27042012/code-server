@@ -68,7 +68,7 @@ RUN mkdir -p /opt && \
         tar -xvf spark-${spark_ver}-bin-hadoop2.7.tgz && \
     ln -s spark-${spark_ver}-bin-hadoop2.7 spark && \
     echo Spark ${spark_ver} installed in /opt
-
+COPY elasticsearch-spark-hadoop-master  ./
 # This ensures we have a volume mounted even if the user forgot to do bind
 # mount. So that they do not lose their data if they delete the container.
 VOLUME [ "/home/coder/project" ]
