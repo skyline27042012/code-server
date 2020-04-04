@@ -51,7 +51,7 @@ WORKDIR /home/coder/project
 
 # install python  and Pyspark
 
-RUN pip3 install -y pandas \
+RUN pip3 install pandas \
     seaborn \
 	matplotlib \
 	findspark \
